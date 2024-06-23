@@ -4,6 +4,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 
 def setup_driver():
@@ -17,8 +19,7 @@ def search_wikipedia(driver, query):
     search_box = driver.find_element(By.NAME, "search")
     search_box.send_keys(query)
     search_box.send_keys(Keys.RETURN)
-    time.sleep(2)
-
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "firstHeading")))
 
 def list_paragraphs(driver):
     paragraphs = driver.find_elements(By.TAG_NAME, "p")
@@ -41,27 +42,18 @@ def main():
         while True:
             action = input("Выберите действие:\n1. Листать параграфы текущей статьи\n2. Перейти на одну из связанных страниц\n3. Выйти\nВведите номер действия: ")
             if action == '1':
-                paragraphs = list_paragraphs(driver)
+                list_paragraphs(driver)
             elif action == '2':
                 links = list_internal_links(driver)
-                link_choice = int(input("Введите номер ссылки, на которую хотите перейти: ")) - 1
-                if 0 <= link_choice < len(links):
-                    driver.get(links[link_choice].get_attribute('href'))
-                    time.sleep(2)
-                    sub_action = input("Выберите действие:\n1. Листать параграфы статьи\n2. Перейти на одну из внутренних статей\nВведите номер действия: ")
-                    if sub_action == '1':
-                        paragraphs = list_paragraphs(driver)
-                    elif sub_action == '2':
-                        sub_links = list_internal_links(driver)
-                        sub_link_choice = int(input("Введите номер ссылки, на которую хотите перейти: ")) - 1
-                        if 0 <= sub_link_choice < len(sub_links):
-                            driver.get(sub_links[sub_link_choice].get_attribute('href'))
-                            time.sleep(2)
-                            list_paragraphs(driver)
-                        else:
-                            print("Неправильный номер ссылки.")
-                else:
-                    print("Неправильный номер ссылки.")
+                try:
+                    link_choice = int(input("Введите номер ссылки, на которую хотите перейти: ")) - 1
+                    if 0 <= link_choice < len(links):
+                        driver.get(links[link_choice].get_attribute('href'))
+                        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "firstHeading")))
+                    else:
+                        print("Неправильный номер ссылки. Пожалуйста, попробуйте снова.")
+                except ValueError:
+                    print("Ошибка ввода. Пожалуйста, попробуйте снова и правильно вводите номер ссылки.")
             elif action == '3':
                 break
             else:

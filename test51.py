@@ -48,18 +48,6 @@ def main():
                 if 0 <= link_choice < len(links):
                     driver.get(links[link_choice].get_attribute('href'))
                     time.sleep(2)
-                    sub_action = input("Выберите действие:\n1. Листать параграфы статьи\n2. Перейти на одну из внутренних статей\nВведите номер действия: ")
-                    if sub_action == '1':
-                        paragraphs = list_paragraphs(driver)
-                    elif sub_action == '2':
-                        sub_links = list_internal_links(driver)
-                        sub_link_choice = int(input("Введите номер ссылки, на которую хотите перейти: ")) - 1
-                        if 0 <= sub_link_choice < len(sub_links):
-                            driver.get(sub_links[sub_link_choice].get_attribute('href'))
-                            time.sleep(2)
-                            list_paragraphs(driver)
-                        else:
-                            print("Неправильный номер ссылки.")
                 else:
                     print("Неправильный номер ссылки.")
             elif action == '3':
