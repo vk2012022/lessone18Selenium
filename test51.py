@@ -6,9 +6,14 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 
+
 def setup_driver():
     options = Options()
-    options.headless = False  # Ставьте True, если не хотите видеть окно браузера
+    options.headless = True #False  # Ставьте True, если не хотите видеть окно браузера
+    options.add_argument("--headless")  # Добавляем аргумент для headless режима
+    options.add_argument("--disable-gpu")  # Отключаем использование GPU
+    options.add_argument("--window-size=900,600")  # Устанавливаем размер окна (обязательно для некоторых ОС)
+
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
